@@ -8,6 +8,12 @@ This program requires the Keras Library
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 # Importing the dataset
 dataset = pd.read_csv('Churn_Modelling.csv')
@@ -15,7 +21,6 @@ x = dataset.iloc[:, 3:13].values # Independent Vars
 y = dataset.iloc[:, 13].values # Dependent vars
 
 #Encoding categorical Data
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 encodeCountry = LabelEncoder()
 x[:, 1] = encodeCountry.fit_transform(x[:, 1])
 encodeGender = LabelEncoder()
@@ -25,14 +30,30 @@ x = onehotencoder.fit_transform(x).toarray()
 x = x[:,1:] # Getting rid of the first column to get rid of the dummy var trap
 
 # Splitting the dataset into the Training set and Test set
-from sklearn.model_selection import train_test_split
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, 
                                                 test_size = 0.2, 
                                                 random_state = 0)
 
 # Feature Scaling
-from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 xTrain = sc.fit_transform(xTrain)
 xTest = sc.transform(xTest)
 
+# Initializing the Neural Network
+classifier = Sequential()
+
+# Adding Input and Fisrt Hidden Layer
+classifier.add(Dense(output_dim = 6, init = 'uniform', 
+                     activation = 'relu', input_dim = 11))
+
+# Adding Second Hidden Layer
+classifier.add(Dense(output_dim = 6, init = 'uniform', 
+                     activation = 'relu'))
+
+# Adding Output Layer
+classifier.add(Dense(output_dim = 1, init = 'uniform', 
+                     activation = 'sigmoid'))
+
+# Compiling the Neural Network - Applying Stochastic Gradient Descent
+classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', 
+                   metrics = ['accuracy'])
