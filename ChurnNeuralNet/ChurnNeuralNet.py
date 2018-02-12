@@ -14,6 +14,8 @@ from keras.layers import Dense
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix
+
 
 # Importing the dataset
 dataset = pd.read_csv('Churn_Modelling.csv')
@@ -57,3 +59,12 @@ classifier.add(Dense(output_dim = 1, init = 'uniform',
 # Compiling the Neural Network - Applying Stochastic Gradient Descent
 classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', 
                    metrics = ['accuracy'])
+
+# Fitting Neural Net to Training Data
+classifier.fit(xTrain, yTrain, batch_size = 10, nb_epoch = 100)
+
+# Predicting Test Results
+yPred = classifier.predict(xTest)
+yPred = (yPred > 0.5)
+# Create the Confusion Matrix
+matrix = confusion_matrix(yTest, yPred)
